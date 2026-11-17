@@ -1,0 +1,19 @@
+{
+  "StartIndex": 0,
+
+
+  // only one: Any Radiance (1.0) (2.0) or Omega Radiance
+  // only one: Ultimatum Radiance or Dumb Radiance
+  "Fights": [
+    //"Any Radiance",
+    // "Omega Radiance",
+    //"Any Radiance Prime",
+    //"Aura Radiance",
+    //"DoubleRadiance",
+    //"SupernovaRadiance",
+    //"Ultimatum Radiance",         
+    // "Dumb Radiance",
+    //"ImmortalLight",
+    //"NightmareUltimatumRadiance",
+  ]
+}

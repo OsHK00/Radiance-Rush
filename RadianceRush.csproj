@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Local paths come from .env (copy .env.example to .env and fill it in). -->
+  <PropertyGroup>
+    <EnvFile>$(MSBuildThisFileDirectory).env</EnvFile>
+    <EnvText Condition="Exists('$(EnvFile)')">$([System.IO.File]::ReadAllText('$(EnvFile)'))</EnvText>
+    <EnvKeyPattern>(?s)^(?:.*\n)?[ \t]*KEY[ \t]*=[ \t]*([^\r\n]*).*$</EnvKeyPattern>
+
+    <HKGame Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(EnvText)', '$(EnvKeyPattern.Replace(`KEY`, `HK_GAME`))'))">$([System.Text.RegularExpressions.Regex]::Replace('$(EnvText)', '$(EnvKeyPattern.Replace(`KEY`, `HK_GAME`))', '$1').Trim())</HKGame>
+    <HKMods Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(EnvText)', '$(EnvKeyPattern.Replace(`KEY`, `HK_MODS`))'))">$([System.Text.RegularExpressions.Regex]::Replace('$(EnvText)', '$(EnvKeyPattern.Replace(`KEY`, `HK_MODS`))', '$1').Trim())</HKMods>
+
+    <HKManaged Condition="Exists('$(HKGame)\Hollow Knight_Data\Managed')">$(HKGame)\Hollow Knight_Data\Managed</HKManaged>
+    <HKManaged Condition="'$(HKManaged)' == '' and Exists('$(HKGame)\hollow_knight_Data\Managed')">$(HKGame)\hollow_knight_Data\Managed</HKManaged>
+    <HKManaged Condition="'$(HKManaged)' == '' and Exists('$(HKGame)\Contents\Resources\Data\Managed')">$(HKGame)\Contents\Resources\Data\Managed</HKManaged>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>RadianceRush</AssemblyName>
+    <RootNamespace>RadianceRush</RootNamespace>
+    <Product>RadianceRush</Product>
+    <Description>Chains Radiance mods at the Absolute Radiance statue</Description>
+    <Version>0.3.0</Version>
+    <LangVersion>latest</LangVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoStdLib>true</NoStdLib>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <GameReference Include="mscorlib;System;System.Core;netstandard;Assembly-CSharp;MMHOOK_Assembly-CSharp;MonoMod.RuntimeDetour;MonoMod.Utils;PlayMaker;UnityEngine;UnityEngine.CoreModule;UnityEngine.IMGUIModule;UnityEngine.TextRenderingModule;Newtonsoft.Json" />
+    <Reference Include="@(GameReference)">
+      <HintPath>$(HKManaged)\%(Identity).dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <None Include="fights.json" />
+  </ItemGroup>
+
+  <Target Name="CheckEnv" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(EnvFile)')" Text="Missing .env. Copy .env.example to .env and set HK_GAME and HK_MODS." />
+    <Error Condition="'$(HKManaged)' == ''" Text="HK_GAME in .env must point to the Hollow Knight install folder (no Managed folder found under '$(HKGame)')." />
+  </Target>
+
+  <Target Name="CopyToMods" AfterTargets="Build" Condition="'$(HKMods)' != ''">
+    <MakeDir Directories="$(HKMods)\$(TargetName)" />
+    <Copy SourceFiles="$(TargetPath);$(TargetDir)$(TargetName).pdb" DestinationFolder="$(HKMods)\$(TargetName)" SkipUnchangedFiles="true" />
+    <Copy Condition="!Exists('$(HKMods)\$(TargetName)\fights.json')" SourceFiles="fights.json" DestinationFolder="$(HKMods)\$(TargetName)" />
+  </Target>
+</Project>
