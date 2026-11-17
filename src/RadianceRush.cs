@@ -18,6 +18,7 @@ namespace RadianceRush
         public bool InRun;
         public bool Pending;
         bool won;
+        BossSceneController.SetupEventDelegate savedSetup;
         Hud hud;
         FightList fightList = new FightList();
 
@@ -28,13 +29,14 @@ namespace RadianceRush
             catch (Exception e) { LogError("Could not hook LoadMod: " + e); }
         }
 
-        public override string GetVersion() { return "0.3.0"; }
+        public override string GetVersion() { return "0.4.0"; }
         public override int LoadPriority() { return 10000; }
 
         public override void Initialize()
         {
             ModHooks.BeforeSceneLoadHook += OnBeforeSceneLoad;
             On.BossSceneController.Awake += OnBossSceneAwake;
+            On.BossSceneController.DoDreamReturn += OnDoDreamReturn;
             var go = new GameObject("RadianceRushHud");
             UnityEngine.Object.DontDestroyOnLoad(go);
             hud = go.AddComponent<Hud>();
@@ -155,8 +157,61 @@ namespace RadianceRush
 
         void OnBossSceneAwake(On.BossSceneController.orig_Awake orig, BossSceneController self)
         {
+            if (InRun && BossSceneController.SetupEvent != null) savedSetup = BossSceneController.SetupEvent;
             orig(self);
             if (InRun) self.OnBossesDead += OnBossesDead;
+        }
+
+        void OnDoDreamReturn(On.BossSceneController.orig_DoDreamReturn orig, BossSceneController self)
+        {
+            if (GS.Enabled && GS.AutoContinue && InRun && won && Index + 1 < Fights.Count) StartNextFight();
+            else orig(self);
+        }
+
+        void StartNextFight()
+        {
+            won = false;
+            Index++;
+            Log("Fight " + (Index + 1) + "/" + Fights.Count + ": " + Fights[Index].Name + " (auto continue)");
+
+            // hide the old Radiance first so oneshot finders wait for the new arenas one
+            for (int i = 0; i < 8; i++)
+            {
+                var old = GameObject.Find("Absolute Radiance");
+                if (old == null) break;
+                old.SetActive(false);
+            }
+            ApplyFight();
+
+            if (savedSetup != null) BossSceneController.SetupEvent = savedSetup;
+            var pd = PlayerData.instance;
+            hud.StartCoroutine(KeepVitals(pd.health, pd.MPCharge, pd.MPReserve));
+            GameManager.instance.BeginSceneTransition(new GameManager.SceneLoadInfo
+            {
+                SceneName = Arena,
+                EntryGateName = "door_dreamEnter",
+                Visualization = GameManager.SceneLoadVisualizations.GodsAndGlory,
+                PreventCameraFadeOut = true,
+                AlwaysUnloadUnusedAssets = true
+            });
+        }
+
+        // carry HP and soul into the next fight
+        IEnumerator KeepVitals(int health, int mp, int reserve)
+        {
+            yield return null;
+            for (float t = 0f; t < 15f && (GameManager.instance.IsInSceneTransition || HeroController.instance == null
+                                           || HeroController.instance.cState.transitioning); t += Time.unscaledDeltaTime)
+                yield return null;
+
+            var hc = HeroController.instance;
+            var pd = PlayerData.instance;
+            if (hc == null || !InRun) yield break;
+            if (pd.health > health) hc.TakeHealth(pd.health - health);
+            else if (pd.health < health) hc.AddHealth(health - pd.health);
+            if (pd.MPReserve != reserve) pd.SetInt("MPReserve", reserve);
+            if (pd.MPCharge != mp) hc.SetMPCharge(mp);
+            Log("Carried over " + health + " HP and " + (mp + reserve) + " soul");
         }
 
         void OnBossesDead()

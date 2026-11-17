@@ -19,7 +19,7 @@
     <RootNamespace>RadianceRush</RootNamespace>
     <Product>RadianceRush</Product>
     <Description>Chains Radiance mods at the Absolute Radiance statue</Description>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <LangVersion>latest</LangVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

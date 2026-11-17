@@ -15,6 +15,7 @@ namespace RadianceRush
             {
                 Entry("Enabled", NoYes, v => gs.Enabled = v == 1, () => gs.Enabled ? 1 : 0),
                 Entry("Show counter", NoYes, v => gs.ShowCounter = v == 1, () => gs.ShowCounter ? 1 : 0),
+                Entry("Auto continue", NoYes, v => gs.AutoContinue = v == 1, () => gs.AutoContinue ? 1 : 0),
                 Entry("Loaded mods", count, v => { }, () => { count[0] = loadedMods().ToString(); return 0; })
             };
         }
