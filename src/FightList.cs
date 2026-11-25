@@ -6,7 +6,6 @@ namespace RadianceRush
 {
     public class FightList
     {
-        public int StartIndex = 0;
         public List<string> Fights = new List<string>();
 
         public static string FilePath

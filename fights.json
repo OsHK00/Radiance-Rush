@@ -1,19 +1,40 @@
 {
-  "StartIndex": 0,
-
-
-  // only one: Any Radiance (1.0) (2.0) or Omega Radiance
-  // only one: Ultimatum Radiance or Dumb Radiance
+  // "Name:mode" SUNSET/PURITY/RadianceBoss normal|hard, chongming easy|normal|hard,
+  // Abskoth 1|2|3|4
+  // "Bench"
+  
   "Fights": [
     //"Any Radiance",
-    // "Omega Radiance",
+    //"AnyRadiance (2)",
+    //"AnyRadiance3",
+    //"ShatteredQuasar",
+    //"Omega Radiance",
     //"Any Radiance Prime",
     //"Aura Radiance",
     //"DoubleRadiance",
     //"SupernovaRadiance",
-    //"Ultimatum Radiance",         
-    // "Dumb Radiance",
+    //"Ultimatum Radiance",
+    //"Dumb Radiance",
     //"ImmortalLight",
     //"NightmareUltimatumRadiance",
+    //"RNGRadiance",
+    //"IronHeadRadiance",
+    //"AtomicRadiance",
+    //"Abskoth",
+    //"AllHallownestEnhanced",
+    //"Biblically Accurate Lasers",
+    //"Marmalade",
+    //"Rogue",
+    //"laser hudiance",
+    //"ChallengeMode",
+    //"chongming:easy",
+    //"chongming:normal",
+    //"chongming:hard",
+    //"RadianceBoss:normal",
+    //"RadianceBoss:hard",
+    //"PURITY:normal",
+    //"PURITY:hard",
+    //"SUNSET:normal",
+    //"SUNSET:hard",
   ]
 }

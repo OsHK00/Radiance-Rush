@@ -28,7 +28,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <GameReference Include="mscorlib;System;System.Core;netstandard;Assembly-CSharp;MMHOOK_Assembly-CSharp;MonoMod.RuntimeDetour;MonoMod.Utils;PlayMaker;UnityEngine;UnityEngine.CoreModule;UnityEngine.IMGUIModule;UnityEngine.TextRenderingModule;Newtonsoft.Json" />
+    <GameReference Include="mscorlib;System;System.Core;netstandard;Assembly-CSharp;MMHOOK_Assembly-CSharp;MonoMod.RuntimeDetour;MonoMod.Utils;PlayMaker;UnityEngine;UnityEngine.CoreModule;UnityEngine.IMGUIModule;UnityEngine.AssetBundleModule;UnityEngine.TextRenderingModule;Newtonsoft.Json" />
     <Reference Include="@(GameReference)">
       <HintPath>$(HKManaged)\%(Identity).dll</HintPath>
       <Private>false</Private>
