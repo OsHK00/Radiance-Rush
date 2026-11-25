@@ -2,39 +2,44 @@
 
 Chains several Radiance mods at the **Absolute Radiance**
 
+This mod doesn't modify any other mod or fight, it only reads them and manages them (turns them on and off
+and picks their version).
 
 ## Install
 
 1. Copy `RadianceRush.dll` and `fights.json` (from the repo root) to `Hollow Knight_Data\Managed\Mods\RadianceRush\`.
 2. Install the Radiance mods you want to chain in (Mods\Rush\) and with no subfolders:
 `Mods\Rush\ImmortalLight.dll`, `Mods\Rush\AuraRadiance.dll`, …
+3. Keep in `Mods\Rush\` only the mods that are in your fight list, any other one stays on in every fight.
 
 ## Choosing the fights
 
-Fights are read from `Mods\RadianceRush\fights.json`, next to the DLL.
+Fights are read from `Mods\RadianceRush\fights.json`, next to the DLL. Uncomment the ones you want, in the order you want.
 
 ```jsonc
 {
-  "StartIndex": 0,
   "Fights": [
-    "AnyRadiance",                
-    // "Omega Radiance",
+    "Any Radiance",
     "DoubleRadiance",
-    "SupernovaRadiance",
+    "Bench",
+    "SUNSET:hard",
+    "chongming:easy",
     // "ImmortalLight",
   ]
 }
 ```
 
-- Each entry is a mod name exactly as shown in the game's mod list
+- Each entry is a mod name as shown in the game's mod list, or its DLL file name (`"AnyRadiance (2)"`).
+- `"Name:mode"` picks a version of mods that have more than one:
+  - SUNSET / PURITY / RadianceBoss: `normal`, `hard`
+  - chongming: `easy`, `normal`, `hard`
+  - Abskoth: `1` to `4`
+- `"Bench"` after a fight takes you to the pantheon rest room.
 
+## Menu
 
-## Supported mods
+- **Enabled**: turns the rush on or off.
+- **Show counter**: shows the fight number on screen.
+- **Auto continue**: after a win, goes straight to the next fight instead of back to the workshop.
+- **Carry HP, soul and Baldur**: keeps them between fights. Off, every fight starts fresh (lifeblood from the bench still carries over).
 
-Rn only mods that can be toggled in the mod list menu (`ITogglableMod`). RadianceRush switches them with the
-API's own `ModLoader.LoadMod` / `UnloadMod`. I will try to include others later on
-
-Only one dll per internal assembly name can load. The AnyRadiance variants (Any Radiance (1.0), Any Radiance(2.0),
-Omega Radiance) share one name, and so do Dumb / Ultimatum / Atomic Radiance.
-
-idk if I can fix this without modifying the code of the other mods, even though that would be a simple solution so...
