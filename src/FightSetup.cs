@@ -20,6 +20,7 @@ namespace RadianceRush
             {
                 case "OrbRadiance.OrbRadiance": return new[] { "easy", "normal", "hard" };
                 case "RadianceBoss.RadianceBoss": return new[] { "normal", "hard" };
+                case "AllHallownestEnhanced.AllHallownestEnhanced": return new[] { "hard", "normal" };
                 // how many markoths
                 case "Abskoth.Abskoth": return new[] { "1", "2", "3", "4" };
             }
@@ -48,7 +49,7 @@ namespace RadianceRush
                 // enhanced_2Radiant is the "!!二次加强无上福光!!" option in its menu, the extra hard radiance
                 case "AllHallownestEnhanced.AllHallownestEnhanced":
                     ModManager.SetSetting(fight, "EnhanceBOSS", true);
-                    ModManager.SetSetting(fight, "enhanced_2Radiant", true);
+                    ModManager.SetSetting(fight, "enhanced_2Radiant", mode == "hard");
                     break;
                 case "Abskoth.Abskoth": SetMarkoths(fight, int.Parse(mode)); break;
             }

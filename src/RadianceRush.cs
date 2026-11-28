@@ -29,6 +29,7 @@ namespace RadianceRush
         readonly HashSet<int> benchAfter = new HashSet<int>();
         bool won;
         bool resting;
+        bool madeInvincible;
         HeroState carried;
         Respawn respawnBeforeBench;
         BossSceneController.SetupEventDelegate savedSetup;
@@ -41,7 +42,7 @@ namespace RadianceRush
             catch (Exception e) { LogError("Could not hook LoadMod: " + e); }
         }
 
-        public override string GetVersion() { return "0.15.1"; }
+        public override string GetVersion() { return "0.16.0"; }
         public override int LoadPriority() { return 10000; }
 
         public override void Initialize()
@@ -174,6 +175,7 @@ namespace RadianceRush
             InRun = Pending = won = resting = false;
             carried = null;
             respawnBeforeBench = null;
+            EndInvincibility();
         }
 
         // purity only adds its hooks on save load if its switch is on, so turn every own-switch fight on first
@@ -246,6 +248,26 @@ namespace RadianceRush
         {
             won = true;
             if (Index + 1 >= Fights.Count) hud.ShowGG();
+            // leftover attacks keep flying during the ending, so no damage until the next room
+            var pd = PlayerData.instance;
+            if (pd != null && !pd.isInvincible)
+            {
+                pd.isInvincible = true;
+                madeInvincible = true;
+            }
+        }
+
+        void EndInvincibility()
+        {
+            if (!madeInvincible) return;
+            madeInvincible = false;
+            if (PlayerData.instance != null) PlayerData.instance.isInvincible = false;
+        }
+
+        IEnumerator EndInvincibilityAfterEntering()
+        {
+            yield return WaitForHero();
+            EndInvincibility();
         }
 
         // you won: bench room, straight into the next fight, or back to the workshop like normal
@@ -355,6 +377,12 @@ namespace RadianceRush
         // sitting on that bench makes it your respawn and saves the game, so put the old respawn back in the save
         void OnBeforeSave(SaveGameData data)
         {
+            // don't let the save keep the knight invincible
+            if (madeInvincible)
+            {
+                EndInvincibility();
+                data.playerData.isInvincible = false;
+            }
             if (!resting || respawnBeforeBench == null) return;
             respawnBeforeBench.Restore(data.playerData);
             respawnBeforeBench.Restore(PlayerData.instance);
@@ -462,6 +490,7 @@ namespace RadianceRush
 
         void OnActiveSceneChanged(Scene from, Scene to)
         {
+            if (madeInvincible && from.name == Arena) hud.StartCoroutine(EndInvincibilityAfterEntering());
             if (!GS.Enabled) return;
             if (resting && to.name == BenchRoom) hud.StartCoroutine(WatchBenchExit());
             if (!InRun || to.name != Arena || Index >= Fights.Count) return;
